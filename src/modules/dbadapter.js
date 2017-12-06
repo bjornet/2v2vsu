@@ -4,10 +4,9 @@ const DbAdapter = {
     db: window.localStorage,
     structure: {
         user: [],
-        team: []
+        team: [],
+        fixture: []
     }
-    // ,
-    // resetBtn: document.querySelector('.reset-app button')
 }
 
 DbAdapter.getData = function (table, entityId) {
@@ -32,15 +31,10 @@ DbAdapter.setData = function (table, newData) {
     let _db = this.db
     let tableData = this.getData(table)
 
-    // [TEST] duplicates
-    const testDuplicateId = (entity) => {
-        return entity.id === newData.id
-    }
-    const testDuplicateName = (entity) => {
-        return entity.name === newData.name
-    }
+    let _isDuplicateId = entity => entity.id === newData.id
+    let _isDuplicateName = entity => entity.name === newData.name
 
-    if (tableData.find(testDuplicateId) || tableData.find(testDuplicateName)) {
+    if (tableData.find(_isDuplicateId) || tableData.find(_isDuplicateName)) {
         console.warn('I halted insert due to :: testDuplicateId || testDuplicateName');
         Utils.alert('background')
 
@@ -50,27 +44,31 @@ DbAdapter.setData = function (table, newData) {
     tableData.push(newData)
     _db.setItem(table, JSON.stringify(tableData))
 
-    // console.log(tableData);
     return true
 }
 
 DbAdapter.updateData = function (table, entityId, dataToUpdate) {
-    // console.log(dataToUpdate);
-    // console.log(entityId);
-
     let _db = this.db
     let tableData = this.getData(table)
 
+    // TODO: DRY! See this.setData()... this is close to a copy from above!
+    // let _isDuplicateId = entity => entity.id === newData.id
+    let _isDuplicateName = entity => entity.name === dataToUpdate.name
+
+    if (tableData.find(_isDuplicateName)) {
+        console.warn('I halted insert due to :: testDuplicateId || testDuplicateName');
+        Utils.alert('background')
+
+        return false
+    }
+
     let entity = tableData.filter(entity => {
         // TODO: user int.. right now entityId is string... WAT?
-        // console.log(entity);
-        // console.log(entityId);
     	return entity.id == entityId
     })
 
     for (var variable in dataToUpdate) {
         if (dataToUpdate.hasOwnProperty(variable)) {
-            // NOTE poorly tested
             entity[0][variable] = dataToUpdate[variable]
         }
     }
@@ -88,6 +86,7 @@ DbAdapter.initDb = function (forceReset) {
         _db.clear()
         _db.setItem('user', JSON.stringify(_struct.user))
         _db.setItem('team', JSON.stringify(_struct.team))
+        _db.setItem('fixture', JSON.stringify(_struct.fixture))
         status = 'DB has been initialised'
         console.log(status);
     }

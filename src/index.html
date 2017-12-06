@@ -1,0 +1,223 @@
+<html>
+    <head>
+        <title>Getting Started</title>
+    </head>
+    <body>
+        <header>
+            <h1>2v2 vs U</h1>
+            <span class="reset-app">
+                <button type="button" name="reset-app">Reset App</button>
+            </span>
+        </header>
+
+        <ul class="menu page-wrapper">
+            <h2>Menu</h2>
+            <li class="menu-item">
+                Users
+            </li>
+            <li class="menu-item">
+                Teams
+            </li>
+            <li class="menu-item">
+                Score
+            </li>
+
+        </ul>
+
+        <div class="users page-wrapper">
+            <h2>Users</h2>
+
+            <!-- TODO:
+                1. Read DB and generate 1 <input> per user entry (see user.js)
+                2. Toggle enable disable proceed btn when DB has 3 users
+            -->
+            <div class="input-wrapper"></div>
+
+            <p>
+                <em>Warning: click here will regenerate teams without further warning!</em>
+                <button type="button" name="goto-team" data-action="goto-assign-teams" disabled="disabled">GENERATE TEAMS (minimum 3 users)</button>
+            </p>
+
+        </div>
+
+        <div class="teams page-wrapper" data-area="assign-teams">
+            <h2>Teams</h2>
+
+            <p>
+                <em>Notice: shuffle btn overrides sort order and can only be done before tournament starts</em>
+                <!-- TODO: Team.shuffle() -->
+                <button type="button" name="shuffle-teams" data-action="shuffle-teams" disabled="disabled">Shuffle teams</button>
+            </p>
+
+            <div class="input-wrapper"></div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="fixtures page-wrapper">
+            <h2>Fixtures</h2>
+
+            <div class="current-fixture">
+                <h3>Current fixture</h3>
+                <!-- <div class="fixture">
+                    <span class="team">Rosenborg</span>
+                    -vs-
+                    <span class="team">AIK</span>
+                </div> -->
+                <div class="input-wrapper">
+                    <span class="current-input-wrapper">
+                        <input type="text" name="result" value="" placeholder="Rosenborg">
+                        -
+                        <input type="text" name="result" value="" placeholder="AIK">
+                        <button type="button" name="button">Submit Score</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="upcomming-fixtures">
+                <h3>Upcomming fixtures</h3>
+                <div class="fixture">
+                    <span class="team">Celtic</span>
+                    -vs-
+                    <span class="team">Malmö</span>
+                </div>
+                <div class="fixture">
+                    <span class="team">Rosenborg</span>
+                    -vs-
+                    <span class="team">Union Berlin</span>
+                </div>
+                ...
+            </div>
+        </div>
+
+        <div class="score page-wrapper">
+            <h2>Scoreboard</h2>
+
+            <div class="individual">
+                <div class="user">
+                    <span class="name" data-name="Björn">Björn</span>
+                    <span class="score" data-score="45">45</span>
+                </div>
+            </div>
+
+            <div class="teams">
+                <span class="name" data-name="AIK">AIK</span>
+                <span class="score" data-score="12">12</span>
+            </div>
+
+        </div>
+
+
+        <script type="text/javascript" src="bundle.js"></script>
+
+
+        <style media="screen">
+            body {
+                margin: 0;
+                font-family: 'Helvetica Neue';
+            }
+            header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: teal
+            }
+            header h1 {
+                flex-grow: 1;
+            }
+            header, .page-wrapper, input, button {
+                padding: 10px;
+            }
+            input, button {
+                border: 0;
+                border-radius: 0;
+                margin: 0;
+            }
+            button {
+                background: black;
+                color: white;
+            }
+            .page-wrapper:nth-child(odd) {
+                background: lightgrey;
+            }
+            .page-wrapper:nth-child(even) {
+                background: #5c5b5b;
+                color: white
+            }
+            .menu {
+                margin: 0;
+            }
+            .menu li {
+                list-style: none;
+            }
+            .menu .menu-item {
+                display: block;
+                padding: 10px;
+                margin: 1px 0;
+                background: black;
+            }
+            .reset-app {
+                /*background: pink*/
+            }
+
+            .page-wrapper.users {}
+            .page-wrapper.teams {}
+
+            .input-wrapper > * {
+                display: block;
+                margin: 10px 0;
+            }
+            .member-label {
+                display: inline-block;
+                padding: 6px 5px 9px;
+                width: 70px;
+                text-align: center;
+                color: white;
+            }
+            .member-1 {
+                background: #e6af4b;
+            }
+            .member-2 {
+                background: #e05038;
+            }
+            .member-3 {
+                background: #ba9077;
+            }
+            .member-4 {
+                background: #bcd5d1;
+            }
+            .member-5 {
+                background: #1d2120;
+            }
+            .member-6 {
+                background: #5a5c51;
+            }
+            .member-7 {
+                background: #f2cbbc;
+            }
+            .member-8 {
+                background: #334431;
+            }
+
+            .fixture {
+
+            }
+            .fixture .team {
+                background: red;
+            }
+
+        </style>
+
+    </body>
+</html>

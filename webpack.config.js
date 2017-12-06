@@ -1,6 +1,7 @@
 // Load the http module to create an http server.
 // var http = require('http');
 const webpack = require('webpack')
+const copy = require('copy-webpack-plugin')
 const path = require('path')
 
 module.exports = {
@@ -9,6 +10,18 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
+
+    plugins: [
+        // https://www.npmjs.com/package/copy-webpack-plugin
+        new copy([
+            {
+                from: 'src/index.html'
+            }
+        ])
+    ],
+
+
+
     // module: {
     //     resolve: {
     //         modules: [

@@ -23,7 +23,7 @@ const Team = {
 }
 
 Team.getTeam = function (teamId) {
-    return DbAdapter.getData('team', teamId)
+    return DbAdapter.getData(this.type, teamId)
 }
 
 Team.addTeam = function (id) {
@@ -42,6 +42,24 @@ Team.addTeam = function (id) {
     DbAdapter.setData(_table, newTeam)
 
     return newTeam
+}
+
+Team.addTeamMember = function (member, id) {
+    let _table = this.type
+    let members = DbAdapter.getData(_table, id).members
+
+    members.push(member.id)
+    DbAdapter.updateData(_table, id, {members: members})
+}
+
+Team.editTeam = function (name, id) {
+    let _table = this.type
+
+    if (name) {
+        DbAdapter.updateData(_table, id, {name: name})
+    } else {
+        console.warn('Team still needs a nickname!')
+    }
 }
 
 Team.generateTeams = function (User) {
@@ -93,51 +111,24 @@ Team.generateTeams = function (User) {
     return false
 }
 
-Team.listTeams = function () {
+Team.listTeams = function (User) {
     if (this.getTeam().length > 0) {
-        // Render.element('span', User.inputWrapperAttributes, User.inputWrapperParent)
 
         this.getTeam().forEach(team => {
-
             // Add new user input
             let inputWrapper = Render.element('span',
                                         Team.inputWrapperAttributes,
                                         Team.inputWrapperParent)
             let input = Render.element('input', this.inputAttributes, inputWrapper)
-            Render.updateElement(input, {'placeholder': team.name})
+            Render.updateElement(input, {'placeholder': team.name, 'data-id': team.id})
 
-
-            team.members.forEach(member => {
-                Render.element('span', {'class': 'member-label' + ' ' + 'member-' + member.id}, inputWrapper, member.name)
+            team.members.forEach(memberId => {
+                Render.element('span', {'class': 'member-label' + ' ' + 'member-' + memberId}, inputWrapper, User.getUser(memberId).name)
             })
 
-            Render.element('button', this.buttonAttributes, inputWrapper, 'Edit Team')
+            let button = Render.element('button', this.buttonAttributes, inputWrapper, 'Edit Team')
+            Render.updateElement(button, {'data-id': team.id})
         })
-    }
-}
-
-Team.memberCount = function (id) {
-    let _table = this.type
-
-    return DbAdapter.getData(_table, id).members.length
-}
-
-Team.addTeamMember = function (member, id) {
-    let _table = this.type
-    let members = DbAdapter.getData(_table, id).members
-
-    members.push(member)
-
-    DbAdapter.updateData(_table, id, {members: members})
-}
-
-Team.editTeam = function (name, id) {
-    let _table = this.type
-
-    if (name) {
-        DbAdapter.updateData(_table, id, {name: name})
-    } else {
-        console.warn('Team still needs a nickname!')
     }
 }
 
@@ -147,7 +138,5 @@ Team.shuffle = function () {
     // TODO: also add a sort order input (saves just like name)
     console.log('TODO: update all this.getTeam() sorting');
 }
-
-Team.listTeams()
 
 export default Team

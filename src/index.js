@@ -17,10 +17,11 @@ let activateBtn = function (btn) {
 
 activateBtn(gotoAssignTeamsBtn)
 activateBtn(shuffleBtn)
+Team.listTeams(User) // TODO: Dependency injection instead?
 
 // EVENTS
-let container = '.'+User.inputWrapperAttributes.class
 $(document).on('click', '.user-button', function(e) {
+    let container = '.'+User.inputWrapperAttributes.class
     let id = e.target.dataset.id
     let $input = $(this).parents(container).find('input[data-id="'+id+'"]')
     let name = $input.val()
@@ -30,21 +31,22 @@ $(document).on('click', '.user-button', function(e) {
     activateBtn(gotoAssignTeamsBtn)
 })
 
-// let container = '.'+User.inputWrapperAttributes.class
 $(document).on('click', '.team-button', function(e) {
+    let container = '.'+Team.inputWrapperAttributes.class
     let id = e.target.dataset.id
-    console.log(id);
-    // let $input = $(this).parents(container).find('input[data-id="'+id+'"]')
-    // let name = $input.val()
-    //
+    let $input = $(this).parents(container).find('input[data-id="'+id+'"]')
+    let name = $input.val()
     // e.target.dataset.action === 'edit-user' ? User.editUser(name, id) : User.addUser(name, this)
+
+    console.log(id, $input, name);
+    Team.editTeam(name, id)
 })
 
 
 $(document).on('click', gotoAssignTeamsBtn, e => {
-    if (Team.generateTeams(User)) {
+    if (Team.generateTeams(User)) { // TODO: Dependency injection instead?
         Render.reset('team')
-        Team.listTeams()
+        Team.listTeams(User) // TODO: Dependency injection instead?
 
         activateBtn(shuffleBtn)
     }

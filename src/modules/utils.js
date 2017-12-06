@@ -15,13 +15,15 @@ Utils.binomial = function binomial(n, k) {
 }
 
 Utils.alert = function alert(property) {
+    let element = 'header'
+    let originalBg = $(element).css(property)
     let intId = setInterval(function () {
-        $('body').css(property, '#'+Math.floor(Math.random()*16777215).toString(16))
+        $(element).css(property, '#'+Math.floor(Math.random()*16777215).toString(16))
     }, 25);
 
     setTimeout(function () {
         clearInterval(intId)
-        $('body').css(property, 'white')
+        $(element).css(property, originalBg)
     }, 1500);
 }
 

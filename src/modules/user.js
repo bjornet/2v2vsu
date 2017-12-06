@@ -26,17 +26,17 @@ const User = {
 }
 
 User.getUser = function (userId) {
-    return DbAdapter.getData('user', userId)
+    return DbAdapter.getData(this.type, userId)
 }
 
 User.addUser = function (name, trigger) {
     let _table = this.type
     let newUser = {
         id: null,
-        name: undefined,
-        teams: [],
+        name: undefined
+        // teams: [],
         // matchesPlayed: [],
-        totalScore: null
+        // totalScore: null
     }
 
     if (name) {
