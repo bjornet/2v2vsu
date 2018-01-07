@@ -1,13 +1,14 @@
 import DbAdapter from './dbadapter.js'
 import Render from './render.js'
 import Utils from './utils.js'
+import Fixture from './fixture.js';
 
 const Team = {
     type: 'team',
     inputWrapperAttributes: {
         class: 'team-input-wrapper'
     },
-    inputWrapperParent: document.querySelector('.teams .input-wrapper'),
+    inputWrapperParent: '.teams .input-wrapper',
     inputAttributes: {
         type: 'text',
         value: '',
@@ -49,14 +50,14 @@ Team.addTeamMember = function (member, id) {
     let members = DbAdapter.getData(_table, id).members
 
     members.push(member.id)
-    DbAdapter.updateData(_table, id, {members: members})
+    DbAdapter.updateData(_table, id, { members: members })
 }
 
 Team.editTeam = function (name, id) {
     let _table = this.type
 
     if (name) {
-        DbAdapter.updateData(_table, id, {name: name})
+        DbAdapter.updateData(_table, id, { name: name })
     } else {
         console.warn('Team still needs a nickname!')
     }
@@ -105,29 +106,40 @@ Team.generateTeams = function (User) {
 
                 }
             })
+
+            Fixture.generateFixtures(this)
+
             return true
         }
     }
     return false
 }
 
-Team.listTeams = function (User) {
+Team.render = function (User) {
+    // Wrapper
+    let teams = Render.element('div', { class: 'teams page-wrapper', 'data-area': 'assign-teams' }, document.body)
+                Render.element('h2', {}, teams, 'Teams')
+    let teamsNotice = Render.element('p', {}, teams)
+                    Render.element('em', {}, teamsNotice, 'Notice: shuffle btn overrides sort order and can only be done before tournament starts')
+                    Render.element('button', { type: 'button', name: 'shuffle-teams', 'data-action': 'shuffle-teams', disabled: 'disabled' }, teamsNotice, 'Shuffle teams')
+    Render.element('div', { class: 'input-wrapper' }, teams)
+
     if (this.getTeam().length > 0) {
 
         this.getTeam().forEach(team => {
-            // Add new user input
+            // Add new team input
             let inputWrapper = Render.element('span',
-                                        Team.inputWrapperAttributes,
-                                        Team.inputWrapperParent)
+                                        this.inputWrapperAttributes,
+                                        document.querySelector(this.inputWrapperParent))
             let input = Render.element('input', this.inputAttributes, inputWrapper)
-            Render.updateElement(input, {'placeholder': team.name, 'data-id': team.id})
+            Render.updateElement(input, { 'placeholder': team.name, 'data-id': team.id })
 
             team.members.forEach(memberId => {
-                Render.element('span', {'class': 'member-label' + ' ' + 'member-' + memberId}, inputWrapper, User.getUser(memberId).name)
+                Render.element('span', { class: 'member-label' + ' ' + 'member-' + memberId }, inputWrapper, User.getUser(memberId).name)
             })
 
             let button = Render.element('button', this.buttonAttributes, inputWrapper, 'Edit Team')
-            Render.updateElement(button, {'data-id': team.id})
+            Render.updateElement(button, { 'data-id': team.id })
         })
     }
 }

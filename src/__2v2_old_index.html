@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Getting Started</title>
+        <meta charset="utf-8">
     </head>
     <body>
         <header>
@@ -34,8 +35,8 @@
             <div class="input-wrapper"></div>
 
             <p>
-                <em>Warning: click here will regenerate teams without further warning!</em>
-                <button type="button" name="goto-team" data-action="goto-assign-teams" disabled="disabled">GENERATE TEAMS (minimum 3 users)</button>
+                <em>Warning: click here will regenerate teams and fixtures without further warning!</em>
+                <button type="button" name="goto-team" data-action="goto-assign-teams" disabled="disabled">GENERATE TEAMS and FIXTURES (minimum 4 users)</button>
             </p>
 
         </div>
@@ -52,68 +53,30 @@
             <div class="input-wrapper"></div>
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         <div class="fixtures page-wrapper">
             <h2>Fixtures</h2>
 
-            <div class="current-fixture">
-                <h3>Current fixture</h3>
-                <!-- <div class="fixture">
-                    <span class="team">Rosenborg</span>
-                    -vs-
-                    <span class="team">AIK</span>
-                </div> -->
-                <div class="input-wrapper">
-                    <span class="current-input-wrapper">
-                        <input type="text" name="result" value="" placeholder="Rosenborg">
-                        -
-                        <input type="text" name="result" value="" placeholder="AIK">
-                        <button type="button" name="button">Submit Score</button>
-                    </span>
-                </div>
-            </div>
+            <div class="input-wrapper"></div>
 
-            <div class="upcomming-fixtures">
-                <h3>Upcomming fixtures</h3>
-                <div class="fixture">
-                    <span class="team">Celtic</span>
-                    -vs-
-                    <span class="team">Malmö</span>
-                </div>
-                <div class="fixture">
-                    <span class="team">Rosenborg</span>
-                    -vs-
-                    <span class="team">Union Berlin</span>
-                </div>
-                ...
-            </div>
         </div>
 
         <div class="score page-wrapper">
             <h2>Scoreboard</h2>
 
             <div class="individual">
-                <div class="user">
+                <h3>Users Score</h3>
+                <!-- <div class="user-score">
                     <span class="name" data-name="Björn">Björn</span>
                     <span class="score" data-score="45">45</span>
-                </div>
+                </div> -->
             </div>
 
             <div class="teams">
-                <span class="name" data-name="AIK">AIK</span>
-                <span class="score" data-score="12">12</span>
+                <h3>Teams Score</h3>
+                <div class="team-score">
+                    <span class="name" data-name="AIK">AIK</span>
+                    <span class="score" data-score="12">12</span>
+                </div>
             </div>
 
         </div>
@@ -210,10 +173,44 @@
                 background: #334431;
             }
 
+            /*.fixtures h2 {}
+            .fixtures .input-wrapper
+            .fixture-input-wrapper*/
+            .fixture-label {
+                font-size: 0.8rem;
+                padding: 8px 10px 10px;
+                min-width: 120px;
+                display: inline-block;
+                text-align: center;
+                background: #f5f5f5;
+            }
+            .fixture-input {
+
+            }
+            .fixture-button {
+
+            }
+
+            .vs-devider {
+                color: white;
+                font-size: 1.4rem;
+                line-height: 1.2rem
+            }
+
             .fixture {
 
             }
             .fixture .team {
+                background: red;
+            }
+
+            .user-score {
+                background: green;
+            }
+            .user-score .name {
+                background: blue;
+            }
+            .user-score .score {
                 background: red;
             }
 

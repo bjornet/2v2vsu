@@ -10,7 +10,7 @@ const User = {
         class: 'user-input-wrapper',
         'data-type': 'add'
     },
-    inputWrapperParent: document.querySelector('.users .input-wrapper'),
+    inputWrapperParent: '.users .input-wrapper',
     inputAttributes: {
         type: 'text',
         value: '',
@@ -69,13 +69,13 @@ User.addUser = function (name, trigger) {
             buttonAttributes['data-action'] = 'edit-user'
             Render.updateElement(trigger, buttonAttributes, 'Edit user')
 
-            Render.updateElement($(trigger).parents(container)[0], {'data-type': 'edit'})
+            Render.updateElement($(trigger).parents(container)[0], { 'data-type': 'edit' })
 
 
             // Add new user input
             let inputWrapper = Render.element('span',
                                         User.inputWrapperAttributes,
-                                        User.inputWrapperParent)
+                                        document.querySelector(User.inputWrapperParent))
             Render.element('input', this.inputAttributes, inputWrapper)
             Render.element('button', this.buttonAttributes, inputWrapper, 'Add User')
         }
@@ -91,41 +91,55 @@ User.editUser = function (name, id) {
     let _table = this.type
 
     if (name) {
-        DbAdapter.updateData(_table, id, {name: name})
+        DbAdapter.updateData(_table, id, { name: name })
     } else {
         console.warn('User still needs a nickname!')
     }
 }
 
-// Existing Users Input(s)
-if (User.getUser().length > 0) {
-    User.getUser().forEach(user => {
-        // input
-        let inputAttributes = _.clone(User.inputAttributes)
-        inputAttributes['value'] = user.name
-        inputAttributes['data-id'] = user.id
-        inputAttributes['placeholder'] = 'Edit user...'
+User.render = function () {
+    // Wrapper
+    // TODO:
+    //     1. Read DB and generate 1 <input> per user entry (see user.js)
+    //     2. Toggle enable disable proceed btn when DB has 3 users
+    let users = Render.element('div', { class: 'users page-wrapper', 'data-area': 'assign-users' }, document.body)
+                Render.element('h2', {}, users, 'Users')
+                Render.element('div', { class: 'input-wrapper' }, users)
+    let usersWarning = Render.element('p', {}, users)
+                        Render.element('em', {}, usersWarning, 'Warning: click here will regenerate teams and fixtures without further warning!')
+                        Render.element('button', { type: 'button', name: 'goto-team', 'data-action': 'goto-assign-teams', disabled: 'disabled' }, usersWarning, 'GENERATE TEAMS and FIXTURES (minimum 4 users)')
 
-        // button
-        let buttonAttributes = _.clone(User.buttonAttributes)
-        buttonAttributes['data-id'] = user.id
-        buttonAttributes['data-action'] = 'edit-user'
+    // New Users Input
+    let inputWrapper = Render.element('span',
+                                User.inputWrapperAttributes,
+                                document.querySelector(User.inputWrapperParent))
+    // Render.updateElement(inputWrapper, { 'data-type': 'add-new' })
+    Render.element('input', User.inputAttributes, inputWrapper)
+    Render.element('button', User.buttonAttributes, inputWrapper, 'Add User')
 
-        let inputWrapper = Render.element('span',
-                                    User.inputWrapperAttributes,
-                                    User.inputWrapperParent)
-        Render.updateElement(inputWrapper, {'data-type': 'edit'})
-        Render.element('input', inputAttributes, inputWrapper)
-        Render.element('button', buttonAttributes, inputWrapper, 'Edit User')
-    })
+    // Existing Users Input(s)
+    if (User.getUser().length > 0) {
+        User.getUser().forEach(user => {
+            // input
+            let inputAttributes = _.clone(User.inputAttributes)
+            inputAttributes['value'] = user.name
+            inputAttributes['data-id'] = user.id
+            inputAttributes['placeholder'] = 'Edit user...'
+
+            // button
+            let buttonAttributes = _.clone(User.buttonAttributes)
+            buttonAttributes['data-id'] = user.id
+            buttonAttributes['data-action'] = 'edit-user'
+
+            let inputWrapper = Render.element('span',
+                                        User.inputWrapperAttributes,
+                                        document.querySelector(User.inputWrapperParent))
+            Render.updateElement(inputWrapper, { 'data-type': 'edit' })
+            Render.element('input', inputAttributes, inputWrapper)
+            Render.element('button', buttonAttributes, inputWrapper, 'Edit User')
+        })
+    }
+
 }
-
-// New Users Input
-let inputWrapper = Render.element('span',
-                            User.inputWrapperAttributes,
-                            User.inputWrapperParent)
-// Render.updateElement(inputWrapper, {'data-type': 'add-new'})
-Render.element('input', User.inputAttributes, inputWrapper)
-Render.element('button', User.buttonAttributes, inputWrapper, 'Add User')
 
 export default User

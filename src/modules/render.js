@@ -3,7 +3,8 @@
 const Render = {
     inputs: {
         user: '.user-input-wrapper',
-        team: '.team-input-wrapper'
+        team: '.team-input-wrapper',
+        fixture: '.fixture-input-wrapper',
     }
 
     // {
@@ -15,19 +16,12 @@ const Render = {
 Render.deleteElements = function(type) {
         let selector = this.inputs[type]
 
+        // NOTE: Array.from() casts HTM NODE to Array. Now we can use functional approach
         Array.from(document.querySelectorAll(selector))
-
             .filter(element => element.dataset.type !== 'add')
-
             .forEach((element) => {
-                console.log(element);
                 element.parentNode.removeChild(element)
             })
-
-
-
-        // console.log(elementsToRemove);
-
     }
 
 
@@ -39,6 +33,7 @@ Render.reset = function (type) {
     } else {
         this.deleteElements('user')
         this.deleteElements('team')
+        this.deleteElements('fixture')
     }
 }
 

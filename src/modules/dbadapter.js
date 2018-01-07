@@ -32,9 +32,16 @@ DbAdapter.setData = function (table, newData) {
     let tableData = this.getData(table)
 
     let _isDuplicateId = entity => entity.id === newData.id
-    let _isDuplicateName = entity => entity.name === newData.name
+    let _isDuplicateName = entity => newData.name !== undefined ? (entity.name === newData.name) : false
+
 
     if (tableData.find(_isDuplicateId) || tableData.find(_isDuplicateName)) {
+        if (table == 'fixture') {
+            console.log(JSON.parse(localStorage.fixture));
+            console.log('Duplicated [id]', tableData.find(_isDuplicateId));
+            // console.log('duplicNAME', tableData.find(_isDuplicateName));
+        }
+
         console.warn('I halted insert due to :: testDuplicateId || testDuplicateName');
         Utils.alert('background')
 
@@ -52,8 +59,9 @@ DbAdapter.updateData = function (table, entityId, dataToUpdate) {
     let tableData = this.getData(table)
 
     // TODO: DRY! See this.setData()... this is close to a copy from above!
-    // let _isDuplicateId = entity => entity.id === newData.id
-    let _isDuplicateName = entity => entity.name === dataToUpdate.name
+    let _isDuplicateName = entity => {
+        return entity.hasOwnProperty(name) && entity.name === dataToUpdate.name
+    }
 
     if (tableData.find(_isDuplicateName)) {
         console.warn('I halted insert due to :: testDuplicateId || testDuplicateName');

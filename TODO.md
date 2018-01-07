@@ -111,3 +111,56 @@
     LAG_4: {uC + uA} => Juleskum
     LAG_5: {uC + uB}  => Gott o blandat
     LAG_6: {uA + uD} => Marabou mjölkchocklad m laktris
+
+
+### FIXTURES
+// IDEA: LOOP PATTERN:
+/*
+    a = 2,1
+        a => 2,1 FAIL
+        b => 3,1 FAIL
+        c => 3,2 FAIL
+        d => 4,1 FAIL
+        e => 4,2 FAIL
+        f => 4,3 FIXTURE!
+
+    b = 3,1
+        a => 2,1 FAIL
+        b => 3,1 FAIL
+        c => 3,2 FAIL
+        d => 4,1 FAIL
+        e => 4,2 FIXTURE!
+        f => 4,3 FAIL!
+
+    c = 3,2
+        a => 2,1 FAIL
+        b => 3,1 FAIL
+        c => 3,2 FAIL
+        d => 4,1 FIXTURE!
+        e => 4,2 FAIL
+        f => 4,3 FAIL
+
+    d = 4,1
+        a => 2,1 FAIL
+        b => 3,1 FAIL
+        c => 3,2 FIXTURE!
+        d => 4,1 FAIL
+        e => 4,2 FAIL
+        f => 4,3 FAIL
+
+    e = 4,2
+        a => 2,1 FAIL
+        b => 3,1 FIXTURE!
+        c => 3,2 FAIL
+        d => 4,1 FAIL
+        e => 4,2 FAIL
+        f => 4,3 FAIL
+
+    f = 4,3
+        a => 2,1 FIXTURE!
+        b => 3,1 FAIL
+        c => 3,2 FAIL
+        d => 4,1 FAIL
+        e => 4,2 FAIL
+        f => 4,3 FAIL
+*/
