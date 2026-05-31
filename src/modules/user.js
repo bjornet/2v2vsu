@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import $ from 'jQuery'
+import $ from 'jquery'
 import DbAdapter from './dbadapter.js'
 import Render from './render.js'
 import Team from './team.js'

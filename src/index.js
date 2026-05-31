@@ -1,5 +1,5 @@
 import './styles.css';
-import $ from 'jQuery'
+import $ from 'jquery'
 import User from './modules/user.js'
 import Team from './modules/team.js'
 import DbAdapter from './modules/dbadapter.js'

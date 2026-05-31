@@ -1,5 +1,5 @@
 import Math from 'mathjs'
-import $ from 'jQuery'
+import $ from 'jquery'
 
 const Utils = {}
 
