@@ -9,56 +9,61 @@ A browser-based 2v2 tournament matchup maker. Players are added, all possible 2-
 ## Commands
 
 ```bash
-npm start        # webpack-dev-server with HMR, opens browser automatically
-npm run build    # production bundle → dist/app.bundle.js
-npm run watch    # webpack watch mode (no dev server)
+npm install            # install shadow-cljs, react, react-dom
+npm start              # shadow-cljs watch: hot-reload dev server at localhost:3000
+npm run build          # shadow-cljs release: production build → public/js/main.js
 ```
 
-There are no tests (`npm test` exits with error by design).
+Requires **Java 11+** and internet access to [Clojars](https://repo.clojars.org) for the first run (downloads shadow-cljs AOT JAR, Reagent, ClojureScript). Subsequent runs use the local `~/.m2` cache.
 
-> `npm run server` references a `server.js` that does not exist — ignore it.
+There are no tests.
 
 ## Architecture
 
-All source lives in `src/`. The build entry is `src/index.js`; output is `dist/app.bundle.js`.
+The app is written in **ClojureScript** using **Reagent** (React wrapper) and built with **shadow-cljs**. All source lives in `src/app/`. Static assets (HTML, CSS) are in `public/`.
 
-### Module responsibilities
+### Namespace responsibilities
 
-| File | Role |
-|------|------|
-| `src/modules/dbadapter.js` | `localStorage` CRUD wrapper — the single source of truth. Tables: `user`, `team`, `fixture`. |
-| `src/modules/user.js` | Player management. Requires ≥ 4 users before teams can be generated. |
-| `src/modules/team.js` | Team generation using C(N,2) combinatorics. Each team has exactly 2 `members` (user IDs). |
-| `src/modules/fixture.js` | Fixture generation (no shared players between home/away) and score recording. |
-| `src/modules/render.js` | Low-level DOM helpers: `element()`, `updateElement()`, `deleteElements()`. |
-| `src/modules/utils.js` | `binomial(n, k)` and a `alert()` background-flash feedback utility. |
-| `src/index.js` | App bootstrap: wires jQuery event delegation, calls `render()` on each module. |
+| Namespace | File | Role |
+|---|---|---|
+| `app.core` | `src/app/core.cljs` | Entry point: calls `init-db!`, mounts Reagent root component. |
+| `app.db` | `src/app/db.cljs` | Single Reagent atom holding all state. `init-db!` hydrates from `localStorage`; `add-watch` persists on every change. |
+| `app.user` | `src/app/user.cljs` | `add-user!`, `edit-user!`, `user-section` Reagent component. |
+| `app.team` | `src/app/team.cljs` | `generate-teams!` (C(n,2) via `math.combinatorics`), `shuffle-teams!`, `no-member-overlap?`, `team-section` component. |
+| `app.fixture` | `src/app/fixture.cljs` | `generate-fixtures!` (`:when` guard on overlap), `update-fixture!`, scoreboard, `fixture-section` component. |
+| `app.combinatorics` | `src/app/combinatorics.cljs` | Pure math: `binomial` (integer, no float drift), `pairs` wrapper around `clojure.math.combinatorics/combinations`. |
+| `app.ui` | `src/app/ui.cljs` | `alert-flash!` using native JS interop. |
 
 ### Data flow
 
-1. `DbAdapter.initDb()` seeds or rehydrates `localStorage` on load.
-2. Each module reads/writes exclusively through `DbAdapter` (`getData`, `setData`, `updateData`).
-3. UI is rendered imperatively via `render.js` helpers — **no React/Redux** despite what the README says; the actual implementation uses jQuery + direct DOM manipulation.
-4. Events are delegated in `index.js` using jQuery class selectors (e.g. `.user-btn`, `.fixture-btn`).
+1. `app.db/init-db!` reads three `localStorage` keys (`users`, `teams`, `fixtures`) and resets the single `app-state` atom.
+2. An `add-watch` on `app-state` serializes the atom to JSON and writes it back to `localStorage` on every `swap!`.
+3. Reagent components (`user-section`, `team-section`, `fixture-section`) dereference `app-state` and re-render automatically when it changes.
+4. All mutations go through `swap! db/app-state` — no separate DB adapter, no manual DOM calls.
 
-### Team generation algorithm
+### State shape
 
-When "GENERATE TEAMS and FIXTURES" is clicked, `Team.generateTeams(User)` computes all C(N,2) pairs. The intended "fair sort" order (documented as "RÄTTVIS SORTERING" in `TODO.md`) interleaves pairs so each player faces diverse opponents across consecutive fixtures — this is not yet implemented (`Team.shuffle()` is a stub).
+```clojure
+{:users    [{:id 1 :name "Gisela"} ...]
+ :teams    [{:id 1 :name "Team 1" :members [1 2] :order 1} ...]
+ :fixtures [{:id 1 :home-id 1 :away-id 3 :home-goals nil :away-goals nil} ...]}
+```
 
-### Fixture generation algorithm
+### Team generation
 
-`Fixture.generateFixtures(Team)` iterates every team as "home" and finds valid "away" teams by checking that no `members` overlap. The pairing pattern is documented with a loop diagram in `TODO.md`.
+`app.team/generate-teams!` calls `clojure.math.combinatorics/combinations` on the user list to produce all C(n,2) pairs, then maps each pair to a team map. This replaces the index-arithmetic loop from the original JS version with a one-liner.
 
-## Known gaps / stubs
+### Fixture generation
 
-- `Team.shuffle()` — not implemented; fair-sort order is stubbed.
-- `Fixture.updateScoreboard()` — score aggregation per user/team is incomplete (TODOs inside).
-- `lodash` is imported in `user.js` (`_.clone`) but is absent from `package.json` — add it if extending that module.
-- `entityId` type inconsistency in `dbadapter.js`: sometimes passed as string, sometimes int; coercion happens implicitly.
-- `utils.binomial()` has float-precision drift for larger inputs (e.g. C(25,4) ≈ 12649.9999…) — round the result if used for counts.
+`app.fixture/generate-fixtures!` uses a `for` comprehension with `:when (no-member-overlap? home away)`. The overlap check is `(empty? (clojure.set/intersection ...))`. Because `:when` filters lazily, there are no null-propagation risks (a bug present in the original JS version).
 
-## Webpack / build notes
+### Scoreboard
 
-- Webpack 3.x — APIs differ from Webpack 5. Don't apply v5 patterns without upgrading.
-- HMR is enabled in dev server; CSS is inlined via `style-loader`.
-- `CleanWebpackPlugin` clears `dist/` on each build.
+`app.fixture/scoreboard` is a pure `reduce` over scored fixtures that computes played/goals/points per team and renders a sorted table. This was a TODO stub in the original JS version — it is now fully implemented.
+
+## Build notes
+
+- `shadow-cljs.edn` is the single build config. Output goes to `public/js/main.js`; the dev server serves `public/` at port 3000.
+- `deps.edn` declares ClojureScript library dependencies for editor tooling (REPL, linting).
+- `public/styles.css` holds all styles. CSS class names (`member-1`…`member-8`, `.fixture-label`, etc.) are referenced as strings in Hiccup and must stay in sync with the stylesheet.
+- No webpack, no jQuery, no lodash, no mathjs — all eliminated by the ClojureScript port.
